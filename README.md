@@ -2,7 +2,7 @@
 
 A premium, glassmorphic desktop overlay for the official [Google Gemini CLI](https://github.com/google/gemini-cli). Inspired by modern spotlight-style launchers, it allows you to summon an expert multimodal agent anywhere in Windows with a single keystroke.
 
-![Gemini Copilot UI](https://raw.githubusercontent.com/username/gemini-copilot/main/screenshot.png)
+![Gemini Copilot UI](./assets/main_ui.png)
 
 ## ✨ Premium Features
 
@@ -12,6 +12,22 @@ A premium, glassmorphic desktop overlay for the official [Google Gemini CLI](htt
 *   **🔒 Secure Bridge**: Uses an isolated Python sidecar and STDIN piping to securely communicate with the Gemini CLI, bypassing common shell injection risks.
 *   **🌊 Fluid Glassmorphism**: A stunning, animated UI built with native CSS backdrop filters for a transparent, high-end feel.
 *   **💨 Tray-Native**: Runs quietly in the system tray. No clutter on your taskbar.
+
+---
+
+## 📸 Interface Preview
+
+Compare the fluid states of the Gemini Desktop Copilot:
+
+````carousel
+### 💭 Thinking State
+Instantly provides visual feedback while the multimodal agent processes your screen or prompt.
+![Gemini Copilot Thinking](./assets/thinking_state.png)
+<!-- slide -->
+### 💬 Final Response
+Clean, readable, and beautifully formatted answers delivered directly into your workflow.
+![Gemini Copilot Response](./assets/response_example.png)
+````
 
 ---
 
