@@ -34,7 +34,7 @@ Clean, readable, and beautifully formatted answers delivered directly into your 
 ## 🚀 Getting Started
 
 ### Quick Start (Recommended)
-1. Download the latest **[Setup.exe](https://github.com/username/gemini-copilot/releases)**.
+1. Download the latest **[Setup.exe](https://github.com/MONKE2525E/gemini-copilot/releases)**.
 2. Run the installer.
 3. Upon first launch, the app will check your environment:
     *   **Node.js**: If missing, it will automatically trigger a secure Windows `winget` installation.
@@ -76,4 +76,4 @@ Clean, readable, and beautifully formatted answers delivered directly into your 
 *   **Isolated Execution**: All queries are passed to the CLI via locked STDIN pipes to prevent any form of command-line argument manipulation.
 
 ## 📄 License
-This project is open-source. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
