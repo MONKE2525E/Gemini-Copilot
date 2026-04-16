@@ -1,0 +1,35 @@
+# Rust / Tauri
+/src-tauri/target/
+/src-tauri/gen/
+/**/target/
+
+# Node / Packaging
+node_modules/
+dist/
+dist-ssr/
+package-lock.json
+*.local
+
+# Python Sidecar
+python-sidecar/.venv/
+python-sidecar/build/
+python-sidecar/dist/
+python-sidecar/__pycache__/
+python-sidecar/*.spec
+!python-sidecar/main.spec
+
+# App specifics
+.tmp/
+*.log
+sidecar_debug.log
+
+# Editor / System
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gemini Copilot</title>
+    <script type="module" src="/main.js" defer></script>
+  </head>
+  <body>
+    <div id="app">
+
+
+
+      <!-- ============================================
+           MAIN APP CONTENT
+           ============================================ -->
+      <!-- Results Container (Final Response) -->
+      <div id="results-container" class="results-container">
+        <div id="results-content" class="results-content"></div>
+      </div>
+
+      <!-- Suggestion Chips (Shown before thinking, moved out of the status gap) -->
+      <div id="suggestion-chips" class="suggestion-chips visible">
+        <button class="chip" data-action="summarize">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <path d="M8 12h8M8 16h5"/>
+          </svg>
+          Summarize screen
+        </button>
+        <button class="chip" data-action="extract">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <path d="M14 2v6h6"/>
+            <path d="M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+          Extract text
+        </button>
+        <button class="chip" data-action="explain">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 16v-4M12 8h.01"/>
+          </svg>
+          Explain this
+        </button>
+      </div>
+
+      <!-- Processing Indicator (Thinking pill) -->
+      <div id="processing-indicator" class="processing-indicator hidden">
+        <span>Thinking...</span>
+      </div>
+
+      <!-- Activity Bubbles (appear between thinking pill and input) -->
+      <div id="activities-container" class="activities-container"></div>
+
+
+      <!-- Main Pill (Input) -->
+      <div id="main-pill" class="main-pill">
+        <div class="glow-layer"></div>
+        <div class="pill-content">
+          <div id="input-container" class="input-container">
+            <div id="attached-image" class="attached-image hidden">
+              <img src="" alt="" />
+              <button class="remove-image" title="Remove image">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <input 
+              type="text"
+              id="query-input" 
+              placeholder="Ask Gemini" 
+              maxlength="2000"
+              autocomplete="off"
+            />
+          </div>
+          
+          <div class="action-buttons">
+            <button id="screenshot-btn" class="icon-btn" title="Take screenshot">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                <path d="M21 15l-5-5L5 21"/>
+              </svg>
+            </button>
+            
+            <button id="submit-btn" class="icon-btn submit" title="Submit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

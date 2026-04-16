@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Gemini Copilot",
+  "version": "0.1.0",
+  "identifier": "com.noah7.gemini.copilot",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "Gemini Copilot",
+        "width": 800,
+        "height": 800,
+        "decorations": false,
+        "transparent": true,
+        "alwaysOnTop": true,
+        "resizable": false,
+        "skipTaskbar": true,
+        "center": false,
+        "x": null,
+        "y": null,
+        "shadow": false,
+        "visible": false,
+        "focus": false
+      }
+    ],
+
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "resources": ["../python-sidecar/dist/main.exe"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "shell": {
+      "scope": [
+        {
+          "name": "python-sidecar",
+          "sidecar": true,
+          "args": []
+        }
+      ]
+    }
+  }
+}
