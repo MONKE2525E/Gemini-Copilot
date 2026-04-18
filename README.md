@@ -47,7 +47,7 @@ Clean, readable, and beautifully formatted answers delivered directly into your 
 #### Prerequisites
 *   [Rust](https://www.rust-lang.org/tools/install) (Tauri Backend)
 *   [Node.js](https://nodejs.org/) (Frontend & CLI dependency)
-*   [Python 3.10+](https://www.python.org/) & [PyInstaller](https://pyinstaller.org/) (Sidecar)
+*   [Python 3.10+](https://www.python.org/) & [PyInstaller](https://pyinstaller.org/) (Sidecar) (Only needed if not using .MSI or .EXE installer)
 
 #### Build Pipeline
 1. Clone the repository and install frontend deps:
