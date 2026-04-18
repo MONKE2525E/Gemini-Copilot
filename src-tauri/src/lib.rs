@@ -18,10 +18,12 @@ use std::os::windows::process::CommandExt;
 struct SidecarResponse {
     success: bool,
     image: Option<String>,
+    image_path: Option<String>,
     response: Option<String>,
     message: String,
 }
 
+#[allow(dead_code)]
 #[derive(Clone, Serialize, Deserialize)]
 struct ActivityPacket {
     request_id: String,
@@ -48,8 +50,44 @@ async fn take_screenshot(state: State<'_, SidecarState>) -> Result<SidecarRespon
     {
         let mut stdin = state.stdin.lock().unwrap();
         writeln!(stdin, "{}", command.to_string()).map_err(|e| e.to_string())?;
+        stdin.flush().map_err(|e| e.to_string())?;
     }
-    rx.await.map_err(|e| e.to_string())
+    let mut res = tokio::time::timeout(std::time::Duration::from_secs(185), rx)
+        .await
+        .map_err(|_| "Screenshot command timed out".to_string())?
+        .map_err(|e| e.to_string())?;
+
+    if res.success {
+        if let Some(path) = &res.image_path {
+            if let Ok(bytes) = std::fs::read(path) {
+                use base64::{Engine as _, engine::general_purpose::STANDARD};
+                res.image = Some(STANDARD.encode(bytes));
+            }
+        }
+    }
+
+    Ok(res)
+}
+
+#[tauri::command]
+async fn reset_session(state: State<'_, SidecarState>) -> Result<SidecarResponse, String> {
+    let (tx, rx) = oneshot::channel();
+    let request_id = uuid::Uuid::new_v4().to_string();
+    {
+        let mut pending = state.pending_requests.lock().unwrap();
+        pending.insert(request_id.clone(), tx);
+    }
+    let command = json!({"type": "reset_session", "request_id": request_id});
+    {
+        let mut stdin = state.stdin.lock().unwrap();
+        writeln!(stdin, "{}", command.to_string()).map_err(|e| e.to_string())?;
+        stdin.flush().map_err(|e| e.to_string())?;
+    }
+    let res = tokio::time::timeout(std::time::Duration::from_secs(10), rx)
+        .await
+        .map_err(|_| "Reset session timed out".to_string())?
+        .map_err(|e| e.to_string())?;
+    Ok(res)
 }
 
 #[tauri::command]
@@ -73,8 +111,13 @@ async fn query_gemini(
     {
         let mut stdin = state.stdin.lock().unwrap();
         writeln!(stdin, "{}", command.to_string()).map_err(|e| e.to_string())?;
+        stdin.flush().map_err(|e| e.to_string())?;
     }
-    rx.await.map_err(|e| e.to_string())
+    let res = tokio::time::timeout(std::time::Duration::from_secs(190), rx)
+        .await
+        .map_err(|_| "Query timed out after 190 seconds".to_string())?
+        .map_err(|e| e.to_string())?;
+    Ok(res)
 }
 
 #[tauri::command]
@@ -127,22 +170,23 @@ async fn restart_app(app: tauri::AppHandle) {
 
 fn create_tray_menu<R: Runtime>(app: &tauri::AppHandle<R>) -> tauri::Result<Menu<R>> {
     let toggle_i = MenuItem::with_id(app, "toggle", "Toggle Copilot", true, None::<&str>)?;
-    let settings_i = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
     let quit_i = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&toggle_i, &settings_i, &quit_i])?;
+    let menu = Menu::with_items(app, &[&toggle_i, &quit_i])?;
     Ok(menu)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_autostart::init(MacosLauncher::LaunchAgent, Some(vec!["--hidden"])))
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             hide_window, show_window, toggle_window_visibility,
             take_screenshot, query_gemini, quit_app, restart_app,
-            check_dependencies, install_gemini_cli, open_url, login_gemini_cli, install_node
+            check_dependencies, install_gemini_cli, open_url, login_gemini_cli, install_node,
+            reset_session
         ])
         .setup(|app| {
             // Check for the bundled main.exe first

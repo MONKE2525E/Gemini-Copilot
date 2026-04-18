@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Gemini Copilot",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "identifier": "com.noah7.gemini.copilot",
   "build": {
     "frontendDist": "../src"
@@ -29,7 +29,11 @@
     ],
 
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      }
     }
   },
   "bundle": {

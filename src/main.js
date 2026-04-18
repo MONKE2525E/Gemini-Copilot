@@ -1,5 +1,7 @@
 // Gemini Copilot UI Controller
 const { invoke } = window.__TAURI__.core;
+const { convertFileSrc } = window.__TAURI__.core;
+const { listen } = window.__TAURI__.event;
 
 // DOM Elements
 let queryInput, mainPill, suggestionChips, attachedImage, attachedImageImg;
@@ -9,6 +11,7 @@ let setupWizard;
 
 // State
 let isProcessing = false, isRecording = false, hasAttachedImage = false;
+let currentImagePath = null;
 
 // Initialize
 window.addEventListener("DOMContentLoaded", () => {
@@ -160,6 +163,7 @@ async function handleWindowShown() {
   if (queryInput) queryInput.focus();
   
   if (!isProcessing) {
+    console.log("Window shown, resetting session...");
     try {
       await invoke('reset_session');
       activitiesContainer.innerHTML = '';
@@ -168,6 +172,8 @@ async function handleWindowShown() {
       showSuggestionChips();
       runSetupCheck();
     } catch (e) { console.error('Failed to reset session:', e); }
+  } else {
+    console.log("Window shown, but query in progress. Skipping reset.");
   }
 }
 
@@ -276,29 +282,38 @@ async function handleSubmit() {
   activitiesContainer.innerHTML = ''; // Clear previous thoughts
   
   try {
-    const imageData = hasAttachedImage ? attachedImageImg.src.split(',')[1] : null;
-    const result = await invoke('query_gemini', { prompt: query, image: imageData });
+    // If we have a local file path from a screenshot, use it directly (much faster).
+    // Otherwise fallback to base64 for manual uploads (if any).
+    const imageInput = currentImagePath || (hasAttachedImage ? attachedImageImg.src.split(',')[1] : null);
+    
+    const result = await invoke('query_gemini', { prompt: query, image: imageInput });
     
     if (result.success && result.response) {
       showFinalResponse(result.response);
+      clearInput(); // Only clear on success
     } else if (result.success) {
-      showFinalResponse("No response received.");
+      showFinalResponse("No response received from model.");
     } else {
-      showFinalResponse(result.response || `Query failed: ${result.message}`);
+      showFinalResponse(result.response || `Query failed: ${result.message}`, true);
     }
   } catch (error) {
     showFinalResponse(`Error: ${error}`);
   } finally {
     setProcessingState(false);
-    clearInput();
   }
 }
 
-function showFinalResponse(text) {
+function showFinalResponse(text, isError = false) {
   // Clear activity bubbles when the response arrives so they don't overlap
   activitiesContainer.innerHTML = '';
   resultsContainer.classList.add('visible');
-  resultsContent.innerHTML = formatResponse(text);
+  
+  if (isError) {
+    resultsContent.innerHTML = `<div class="error-display"><strong>Error:</strong> ${text}</div>`;
+  } else {
+    resultsContent.innerHTML = formatResponse(text);
+  }
+  
   resultsContent.scrollTop = resultsContent.scrollHeight;
   hideSuggestionChips(); // Ensure chips stay hidden during results
 }
@@ -324,10 +339,20 @@ function setProcessingState(processing) {
 async function takeScreenshot() {
   try {
     const result = await invoke('take_screenshot');
-    if (result.success && result.image) {
-      showAttachedImage(`data:image/png;base64,${result.image}`);
+    if (result.success) {
+      if (result.image_path) {
+        currentImagePath = result.image_path;
+        if (result.image) {
+          showAttachedImage(`data:image/png;base64,${result.image}`);
+        } else {
+          showAttachedImage(convertFileSrc(result.image_path) + "?t=" + Date.now());
+        }
+      } else if (result.image) {
+        currentImagePath = null;
+        showAttachedImage(`data:image/png;base64,${result.image}`);
+      }
     }
-  } catch (e) { console.error(e); }
+  } catch (e) { console.error("Screenshot error:", e); }
 }
 
 function showAttachedImage(src) {
@@ -339,6 +364,7 @@ function showAttachedImage(src) {
 function removeAttachedImage() {
   attachedImage.classList.add('hidden');
   hasAttachedImage = false;
+  currentImagePath = null;
   // Re-show chips if we are now clean
   if (!queryInput.value.trim() && !resultsContainer.classList.contains('visible')) {
     showSuggestionChips();
@@ -355,10 +381,16 @@ function showSuggestionChips() { suggestionChips.classList.add('visible'); }
 function hideSuggestionChips() { suggestionChips.classList.remove('visible'); }
 
 async function handleChipAction(action) {
+  if (isProcessing) return;
+  
+  setProcessingState(true); // Lock early to prevent double-clicks
   await takeScreenshot();
+  
   const prompts = { summarize: 'Summarize screen', extract: 'Extract text', explain: 'Explain this' };
   queryInput.value = prompts[action] || '';
-  handleSubmit();
+  
+  isProcessing = false; // Unlock so handleSubmit can run
+  await handleSubmit();
 }
 
 async function hideWindow() {
