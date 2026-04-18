@@ -4,14 +4,14 @@ A premium, glassmorphic desktop overlay for the official [Google Gemini CLI](htt
 
 ![Gemini Copilot UI](./assets/main_ui.png)
 
-## ✨ Premium Features
+## ✨ Features
 
-*   **⚡ Instant Summon**: Press `Alt + Space` globally to bring up the interface.
-*   **🖼️ Multimodal Vision (v0.1.5)**: Capture any screen or monitor instantly. Ask questions about your code, a design mockup, or anything visible on your display. (Significantly faster and more robust with local file ingestion bypass, headless file-flag parsing, and UTF-8 encoding support!)
-*   **🛠️ Ambient Setup**: Zero manual configuration. The app automatically detects, installs, and updates Node.js and the Gemini CLI silently in the background.
-*   **🔒 Secure Bridge**: Uses an isolated Python sidecar and STDIN piping to securely communicate with the Gemini CLI, bypassing common shell injection risks.
-*   **🌊 Fluid Glassmorphism**: A stunning, animated UI built with native CSS backdrop filters for a transparent, high-end feel.
-*   **💨 Tray-Native**: Runs quietly in the system tray. No clutter on your taskbar.
+*   **Instant Summon**: Press `Alt + Space` globally to bring up the interface.
+*   **Multimodal Vision (v0.1.5)**: Capture any screen or monitor instantly. Ask questions about your code, a design mockup, or anything visible on your display. (Significantly faster and more robust with local file ingestion bypass, headless file-flag parsing, and UTF-8 encoding support!)
+*   **Ambient Setup**: Zero manual configuration. The app automatically detects, installs, and updates Node.js and the Gemini CLI silently in the background.
+*   **Secure Bridge**: Uses an isolated Python sidecar and STDIN piping to securely communicate with the Gemini CLI, bypassing common shell injection risks.
+*   **Fluid Glassmorphism**: A stunning, animated UI built with native CSS backdrop filters for a transparent, high-end feel.
+*   **Tray-Native**: Runs quietly in the system tray. No clutter on your taskbar.
 
 ---
 
